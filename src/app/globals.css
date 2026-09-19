@@ -1,0 +1,239 @@
+@import "tailwindcss";
+
+/* Design tokens lifted from the Figma file (Desktop - 6, node 110:1745). */
+@theme {
+  --color-cream: #fff8e7;
+  --color-pink: #ff2d78;
+  --color-pink-soft: #f48fb1;
+  --color-pink-pale: #ffd9e2;
+  --color-pink-light: #f0a6bd;
+  --color-pink-card: #fe9dd2;
+  --color-plum: #4d0e24;
+  --color-ink: #32302b;
+  --color-sand: #e8d5b5;
+  --color-beige: #eee6d9;
+  --color-stone: #e5e1da;
+  --color-sage: #8b9e8a;
+  --color-grey: #525252;
+  --color-grey-light: #aeaeae;
+  --color-grey-lighter: #d9d9d9;
+
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Fluid type: 1440 desktop frame values down to the 390 mobile frame values. */
+  --text-eyebrow: clamp(0.9375rem, 1.67vw, 1.5rem);
+  --text-heading: clamp(2.25rem, 4.45vw, 4rem);
+  --text-heading--line-height: clamp(45px, 4.17vw, 60px);
+  --text-body-lg: clamp(1rem, 1.4vw, 1.25rem);
+
+  --animate-hero-left: hero-left 1.4s var(--ease-out-quint) both;
+  --animate-hero-right: hero-right 1.4s var(--ease-out-quint) both;
+  --animate-marquee: marquee 32s linear infinite;
+
+  @keyframes hero-left {
+    from {
+      opacity: 0;
+      transform: translateX(-6%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  @keyframes hero-right {
+    from {
+      opacity: 0;
+      transform: translateX(6%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@theme inline {
+  --font-display: var(--font-starleague);
+  --font-body: var(--font-quicksand);
+  --font-mono: var(--font-dm-mono);
+  --font-sans: var(--font-dm-sans);
+  --font-serif: var(--font-abril);
+}
+
+/*
+ * Where the Journey section pins: desktop width, at least 520px tall, motion
+ * allowed. Mirrors CAN_PIN + useReducedMotion in Journey.tsx, so the pinned
+ * layout is already in the server HTML instead of snapping in after hydration.
+ */
+@custom-variant pin {
+  @media (min-width: 1024px) and (min-height: 520px) and (prefers-reduced-motion: no-preference) {
+    @slot;
+  }
+}
+
+/* Side gutters: exactly 20px on the 390 mobile frame, 108px on the 1440 desktop frame, linear between. */
+@utility gutter {
+  padding-inline: clamp(20px, calc(20px + (100vw - 390px) * 0.08381), 108px);
+}
+
+/*
+ * Vertical metrics of the display font. The hero heading is sized and spaced
+ * by CAP HEIGHT rather than font-size, because Figma's numbers (124/48/124px,
+ * 14px gaps) assume Starleague's cap ratio of 0.661. Driving the composition
+ * off these two values keeps the cap heights and gaps identical no matter
+ * which face is active.
+ *   --display-cap      cap height as a fraction of the em
+ *   --display-cap-top  distance from the line box top to the cap top, in ems,
+ *                      when line-height equals --display-cap
+ * Measured for Starleague Black (canvas render of "CONTENT": cap 0.7075em,
+ * ascent 1.005em, descent 0.195em). Unbounded, the previous stand-in, was
+ * 0.7725 / 0.10875. Re-measure if the display face changes again.
+ */
+:root {
+  --display-cap: 0.7075;
+  --display-cap-top: 0.1512;
+}
+
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+}
+
+body {
+  background: var(--color-cream);
+  color: #000;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * About section: scroll-driven word reveal.
+ * --p (0..1) is written by the section from scroll progress; --n is the word
+ * count and --i the word index, so each word lights up in reading order.
+ * The first declaration is the fallback for browsers without color-mix().
+ */
+.about-word {
+  color: var(--color-sand);
+  color: color-mix(
+    in oklab,
+    var(--color-sand) calc(clamp(0, var(--p, 1) * var(--n) - var(--i), 1) * 100%),
+    var(--color-grey)
+  );
+}
+
+/*
+ * /content split: the hovered (or keyboard-focused) panel's image zooms in
+ * while the other panel's image zooms out. Scale only - no colour treatment
+ * changes. Images rest at 1.04 so the recessed state (1.0) never exposes the
+ * panel edge. Pure CSS via :has(), so the page needs no client JavaScript.
+ */
+.split-media {
+  transform: scale(1.04);
+  transition: transform 0.9s var(--ease-out-quint);
+}
+@media (hover: hover) {
+  .split-panel:hover .split-media {
+    transform: scale(1.1);
+  }
+  .split:has(.split-panel:hover) .split-panel:not(:hover) .split-media {
+    transform: scale(1);
+  }
+}
+.split-panel:focus-within .split-media {
+  transform: scale(1.1);
+}
+.split:has(.split-panel:focus-within) .split-panel:not(:focus-within) .split-media {
+  transform: scale(1);
+}
+
+/*
+ * Scroll-driven card stacks below lg (ContentStack: the heading pins and each
+ * label + card block sticks beneath it; CareerSnapshot: the arch + MBA card
+ * block sticks and the other cards rise over it). Back to a plain column where
+ * a block cannot fit - short or landscape viewports - or when motion is reduced.
+ */
+@media (max-width: 1023px) and (max-height: 640px), (max-width: 1023px) and (min-aspect-ratio: 1/1), (prefers-reduced-motion: reduce) {
+  .stack-heading,
+  .stack-card {
+    position: static;
+  }
+}
+
+/*
+ * Site menu (Header): enter on mount, exit while [data-closing] is set, then
+ * the component unmounts it. Timings mirror the original motion version:
+ * backdrop fades 0.3s (out after 0.15s) on motion's default ease-out
+ * curve, the card drops in from -4% over
+ * 0.55s and leaves to -3% over 0.3s, links rise 14px over 0.45s with a 0.2s +
+ * 0.05s-per-link stagger and fade out in 0.15s.
+ */
+.menu-overlay {
+  animation: menu-fade-in 0.3s cubic-bezier(0, 0, 0.58, 1) both;
+}
+.menu-card {
+  animation: menu-card-in 0.55s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+.menu-link {
+  animation: menu-link-in 0.45s cubic-bezier(0.23, 1, 0.32, 1) calc(0.2s + var(--i, 0) * 0.05s) both;
+}
+.menu-overlay[data-closing] {
+  animation: menu-fade-out 0.3s cubic-bezier(0, 0, 0.58, 1) 0.15s both;
+}
+.menu-overlay[data-closing] .menu-card {
+  animation: menu-card-out 0.3s cubic-bezier(0.4, 0, 1, 1) both;
+}
+.menu-overlay[data-closing] .menu-link {
+  animation: menu-fade-out 0.15s cubic-bezier(0, 0, 0.58, 1) both;
+}
+@keyframes menu-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes menu-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes menu-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4%);
+  }
+}
+@keyframes menu-card-out {
+  to {
+    opacity: 0;
+    transform: translateY(-3%);
+  }
+}
+@keyframes menu-link-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .menu-overlay,
+  .menu-card,
+  .menu-link {
+    animation: none;
+  }
+  .about-word {
+    color: var(--color-sand);
+  }
+  .split-media {
+    transition: none;
+  }
+}
