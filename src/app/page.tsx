@@ -31,9 +31,10 @@ export default async function Home() {
         <ContentStack {...c.contentPortfolio} />
         <Platforms {...c.platforms} />
         <Journey {...c.journey} />
-        <Projects {...c.projects} />
-        <Brands {...c.brands} />
-        <Media {...c.media} />
+        {/* Shown unless hidden in the admin panel (Show / Hide on each of these three). */}
+        {c.projects.visible !== false && <Projects {...c.projects} />}
+        {c.brands.visible !== false && <Brands {...c.brands} />}
+        {c.media.visible !== false && <Media {...c.media} />}
         <CareerSnapshot career={c.career} />
         <Contact contact={c.contact} />
       </main>

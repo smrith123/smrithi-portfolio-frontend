@@ -104,18 +104,22 @@ function Panel({ panel, className }: { panel: CareerContent["panel"]; className?
         <p className="font-body text-[14px] leading-[19px] text-black/50 lg:text-[clamp(14px,1.4vw,20px)] lg:leading-none">{panel.description}</p>
       </div>
       <div className="flex flex-col gap-3 pt-2 lg:gap-4 lg:pt-0">
-        <Button
-          href={panel.downloadCta.href}
-          /* The CV is served from the API origin, where a download attribute is ignored, so open it in a new tab. */
-          target="_blank"
-          rel="noreferrer"
-          rounded
-          className="w-full lg:text-[clamp(14px,1.2vw,17px)]"
-          iconPosition="left"
-          icon={<img src={vectors.download} alt="" width={20} height={20} loading="lazy" className="size-4 lg:size-5" />}
-        >
-          {panel.downloadCta.label}
-        </Button>
+        {/* Until a CV is uploaded the link is the "#" placeholder, which in a new tab would just open the
+            site again, so the button only appears once there is a file to open. */}
+        {/^https?:\/\//.test(panel.downloadCta.href) && (
+          <Button
+            href={panel.downloadCta.href}
+            /* The CV is served from Cloudinary, another origin, where a download attribute is ignored, so open it in a new tab. */
+            target="_blank"
+            rel="noreferrer"
+            rounded
+            className="w-full lg:text-[clamp(14px,1.2vw,17px)]"
+            iconPosition="left"
+            icon={<img src={vectors.download} alt="" width={20} height={20} loading="lazy" className="size-4 lg:size-5" />}
+          >
+            {panel.downloadCta.label}
+          </Button>
+        )}
         <Button
           href={panel.contactCta.href}
           variant="outline"

@@ -46,7 +46,6 @@ export interface ContentPiece {
   number: string;
   label: string;
   image: ImageSrc;
-  href?: string;
 }
 
 export type PlatformId = "instagram" | "tiktok" | "youtube";
@@ -138,6 +137,11 @@ export interface ContactContent extends SectionHeading {
   };
 }
 
+/** Set from the admin panel; absent (content saved before the switch existed) means shown. */
+export interface Toggleable {
+  visible?: boolean;
+}
+
 export interface HomeContent {
   nav: NavLink[];
   hero: HeroContent;
@@ -145,9 +149,9 @@ export interface HomeContent {
   contentPortfolio: SectionHeading & { pieces: ContentPiece[] };
   platforms: { items: Platform[] };
   journey: SectionHeading & { steps: JourneyStep[] };
-  projects: SectionHeading & { items: Project[] };
-  brands: SectionHeading & { items: Brand[] };
-  media: SectionHeading & { items: MediaItem[] };
+  projects: SectionHeading & Toggleable & { items: Project[] };
+  brands: SectionHeading & Toggleable & { items: Brand[] };
+  media: SectionHeading & Toggleable & { items: MediaItem[] };
   career: CareerContent;
   contact: ContactContent;
 }

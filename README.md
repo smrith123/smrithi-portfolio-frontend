@@ -12,6 +12,7 @@ npm run dev        # http://localhost:3000
 | Variable | |
 | --- | --- |
 | `NEXT_PUBLIC_API_URL` | The backend origin, without `/api` (a trailing `/api` or `/` is stripped). Default `http://localhost:5000`. Required on Vercel: the build fails without it or with a `localhost` value |
+| `REVALIDATE_SECRET` | Shared with the backend, which calls `/api/revalidate` after every admin save. Server-only. Without it the endpoint refuses every call and edits wait for the 10-second timer |
 | `NEXT_PUBLIC_SITE_URL` | The public origin, e.g. `https://smrithi.example`. Used for canonical URLs, `sitemap.xml`, `robots.txt` and social cards. **Set it before launch.** On Vercel it falls back to the project's production URL. |
 | `GOOGLE_SITE_VERIFICATION` | Optional. The token from Search Console's "HTML tag" method, for a URL-prefix property. Not needed for a Domain property, which is verified by DNS. |
 | `SITE_SOCIAL_PROFILES` | Comma-separated profile URLs confirmed to be Smrithi's own. They become `sameAs` in the Person structured data. Leave empty until confirmed: the Instagram handle on the site came from the design file. |
@@ -28,8 +29,11 @@ Render free instance to wake. If the API cannot be reached:
   being served, so an API blip never replaces the client's edits with the
   bundled seed copy. Next retries on the next request.
 
-Pages are statically rendered and revalidate every 10 seconds, so an edit made in
-the admin panel appears within a few seconds without a redeploy.
+Pages are statically rendered and every content fetch is tagged `content`. After
+each admin save the backend calls `POST /api/revalidate` (authorised with
+`REVALIDATE_SECRET`), which expires that tag, so the next visit to any page
+renders fresh and an edit shows on the first refresh. The 10-second revalidate
+stays as a safety net for changes that bypass the admin or a lost webhook.
 
 Components take plain props and never fetch, which is why connecting the backend
 did not require touching any of them.
@@ -78,8 +82,10 @@ same images from the backend's media library.
 ## Deploying to Vercel
 
 Import this folder as its own Vercel project (framework Next.js, defaults
-otherwise). Set `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_SITE_URL` for
-Production, then deploy. Both are read at build time, so changing either one
+otherwise). Set `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL` and
+`REVALIDATE_SECRET` for Production, then deploy. On Render, set the backend's
+`FRONTEND_REVALIDATE_URL` to `https://<site>/api/revalidate` and the same
+`REVALIDATE_SECRET`. Both are read at build time, so changing either one
 needs a redeploy.
 
 Wake the API (open `/api/health`) before deploying. The build fetches every
