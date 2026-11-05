@@ -29,6 +29,14 @@ export function Brands({ eyebrow, lines, items }: Heading & { items: Brand[] }) 
                 alt={i < items.length ? brand.name : ""}
                 width={brand.width}
                 height={brand.height}
+                /*
+                 * Eager, not lazy: the strip clips the logos still off to the side, so lazy loading would only
+                 * start each one as it slides into view and it would cross the strip blank. All copies share
+                 * one URL per logo, so this is one small request per brand. `sizes` mirrors the slot widths
+                 * below; without it the optimizer serves 2048/3840px files for a slot of at most 224px.
+                 */
+                loading="eager"
+                sizes="(min-width: 1024px) 224px, (min-width: 640px) 160px, 128px"
                 className="aspect-video h-auto w-32 object-contain sm:w-40 lg:w-[clamp(160px,13vw,224px)]"
               />
             </li>
