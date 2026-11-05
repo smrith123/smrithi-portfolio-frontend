@@ -178,9 +178,11 @@ export const homeContent: HomeContent = {
     eyebrow: "-Collaborations",
     lines: [[{ text: "trusted", accent: true }], [{ text: "brands" }]],
     items: [
-      { id: "brand-1", name: "Logoipsum", logo: assets.brand[0], width: 205, height: 41 },
-      { id: "brand-2", name: "Logoipsum", logo: assets.brand[1], width: 207, height: 41 },
-      { id: "brand-3", name: "Logoipsum", logo: assets.brand[2], width: 175, height: 41 },
+      { id: "brand-1", name: "Mana Couture India", logo: assets.brand[0], width: 2048, height: 1152 },
+      { id: "brand-2", name: "adidas", logo: assets.brand[1], width: 2048, height: 1152 },
+      { id: "brand-3", name: "Huda Beauty", logo: assets.brand[2], width: 736, height: 414 },
+      { id: "brand-4", name: "soundcore", logo: assets.brand[3], width: 2048, height: 1152 },
+      { id: "brand-5", name: "SOLAWAVE", logo: assets.brand[4], width: 1920, height: 1080 },
     ],
   },
 

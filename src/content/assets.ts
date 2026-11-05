@@ -23,10 +23,6 @@ import project01 from "../../public/assets/Mask group (3).png";
 import project02 from "../../public/assets/Mask group (1).png";
 import project03 from "../../public/assets/Mask group (2).png";
 
-import brand01 from "../../public/assets/Vector.png";
-import brand02 from "../../public/assets/logo.png";
-import brand03 from "../../public/assets/Vector (2).png";
-
 import media01 from "../../public/assets/image 40 (1).png";
 import media02 from "../../public/assets/Frame 73 (1).png";
 import media03 from "../../public/assets/image 84.png";
@@ -60,7 +56,13 @@ export const assets = {
   content: [content01, content02, content03, content04, content05],
   platform: [platform01, platform02, platform03, platform04, platform05, platform06],
   project: [project01, project02, project03],
-  brand: [brand01, brand02, brand03],
+  brand: [
+    "/assets/smrithi1.JPEG",
+    "/assets/smrithi992.JPEG",
+    "/assets/smritiihi3.jpeg",
+    "/assets/smrithi4.JPEG",
+    "/assets/smrithi5.PNG",
+  ],
   media: [media01, media02, media03],
   careerPortrait,
   contactBackground,
